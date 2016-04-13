@@ -75,6 +75,7 @@ def public_dashboard(token, org_slug=None):
                                }),
                                base_href=base_href(),
                                name=settings.NAME,
+                               logo_path=settings.LOGO_PATH,
                                client_config=json.dumps(settings.COMMON_CLIENT_CONFIG))
 
     return response, 200, headers

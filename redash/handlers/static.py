@@ -59,6 +59,7 @@ def index(**kwargs):
                                user=json.dumps(user),
                                base_href=base_href(),
                                name=settings.NAME,
+                               logo_path=settings.LOGO_PATH,
                                org_slug=current_org.slug,
                                client_config=json.dumps(client_config))
 

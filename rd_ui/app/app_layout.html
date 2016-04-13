@@ -93,6 +93,7 @@
     // TODO: move currentUser & features to be an Angular service
     var clientConfig = {{ client_config|safe }};
     var basePath = "{{base_href}}";
+    var logoPath = "{{logo_path}}";
     var currentUser = {{ user|safe }};
 
     currentUser.canEdit = function(object) {

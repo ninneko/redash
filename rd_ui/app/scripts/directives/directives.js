@@ -32,6 +32,7 @@
         $scope.reloadDashboards();
 
         $scope.currentUser = currentUser;
+        $scope.logoPath = logoPath;
       }
     }
   }]);
