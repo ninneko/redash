@@ -709,6 +709,16 @@ class Query(ModelTimestampsMixin, BaseModel, BelongsToOrgMixin):
 
         return query
 
+    @classmethod
+    def fork(cls, id, user, org):
+        q = cls.get_by_id_and_org(id, org).to_dict(with_visualizations=True)
+        for field in ['id', 'created_at', 'api_key', 'latest_query_data', 'last_modified_by']:
+            query_def.pop(field, None)
+
+
+
+
+
     def pre_save(self, created):
         super(Query, self).pre_save(created)
         self.query_hash = utils.gen_query_hash(self.query)

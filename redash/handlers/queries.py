@@ -5,7 +5,7 @@ import sqlparse
 
 from funcy import distinct, take
 from itertools import chain
-
+import json
 from redash.handlers.base import routes, org_scoped_rule
 from redash.handlers.query_results import run_query
 from redash import models
@@ -43,7 +43,51 @@ class QueryRecentResource(BaseResource):
 
         return take(20, distinct(chain(recent, global_recent), key=lambda d: d['id']))
 
+class QueryForkResource(BaseResource):
+    @require_permission('create_query')
+    def post(self, query_id):
+        print "!!!!!!!!!!!!!!!!!"
+        print "param id is " + query_id
+        query_def = request.get_json(force=True)
+        print "post data is " + json.dumps(query_def)
+        data_source = models.DataSource.get_by_id_and_org(query_def.pop('data_source_id'), self.current_org)
+        require_access(data_source.groups, self.current_user, not_view_only)
+        
+        visualizations = query_def.pop('visualizations')
 
+        
+        
+
+        for field in ['id', 'created_at', 'api_key', 'latest_query_data', 'last_modified_by']:
+            query_def.pop(field, None)
+
+        # If we already executed this query, save the query result reference
+        if 'latest_query_data_id' in query_def:
+            query_def['latest_query_data'] = query_def.pop('latest_query_data_id')
+
+        query_def['user'] = self.current_user
+        query_def['data_source'] = data_source
+        query_def['org'] = self.current_org
+        query = models.Query.create(**query_def)
+        print "!!!!!!!!!!!!!!!!!!!"
+        print query
+
+
+        for visualization in visualizations:
+            visualization.pop('id')
+            visualization['query'] = query
+
+        with models.db.database.atomic():
+            models.Visualization.insert_many(visualizations).execute()
+
+        self.record_event({
+            'action': 'create',
+            'object_id': query.id,
+            'object_type': 'query'
+        })
+
+        return query.to_dict()
+        
 class QueryListResource(BaseResource):
     @require_permission('create_query')
     def post(self):

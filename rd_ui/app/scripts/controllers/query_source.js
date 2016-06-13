@@ -66,12 +66,35 @@
       return savePromise;
     };
 
+    $scope.forkQuery = function(options, data) {
+      console.log(data);
+      if (data) {
+        data.id = $scope.query.id;
+      } else {
+        data = _.clone($scope.query);
+      }
+      console.log("!!!!!!!!!!!!!!!!!!!!!!!!");
+      console.log(data);
+
+      options = _.extend({}, {
+        successMessage: 'Query saved',
+        errorMessage: 'Query could not be saved'
+      }, options);
+
+
+      return Query.fork(data, function() {
+        growl.addSuccessMessage(options.successMessage);
+      }, function(httpResponse) {
+        growl.addErrorMessage(options.errorMessage);
+      }).$promise;
+    };
+
     $scope.duplicateQuery = function() {
       Events.record(currentUser, 'fork', 'query', $scope.query.id);
       $scope.query.name = 'Copy of (#'+$scope.query.id+') '+$scope.query.name;
-      $scope.query.id = null;
       $scope.query.schedule = null;
-      $scope.saveQuery({
+      console.log(Query);
+      $scope.forkQuery({
         successMessage: 'Query forked',
         errorMessage: 'Query could not be forked'
       }).then(function redirect(savedQuery) {

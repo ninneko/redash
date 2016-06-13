@@ -429,6 +429,12 @@
           method: 'get',
           isArray: true,
           url: "api/queries/recent"
+        },
+        fork: {
+          method: 'post',
+          isArray: true,
+          url: "api/queries/:id/fork",
+          params: {id: '@id'}
         }});
 
     Query.newQuery = function () {
