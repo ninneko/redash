@@ -711,11 +711,16 @@ class Query(ModelTimestampsMixin, BaseModel, BelongsToOrgMixin):
 
     @classmethod
     def fork(cls, id, user, org):
-        q = cls.get_by_id_and_org(id, org).to_dict(with_visualizations=True)
-        for field in ['id', 'created_at', 'api_key', 'latest_query_data', 'last_modified_by']:
-            query_def.pop(field, None)
 
-
+        q = cls.get_by_id_and_org(id, org)
+        q2 = Query()
+        list = ["org", "data_source", "latest_query_data", "name", "description", "query", "query_hash", "user_email", "user"]
+        for a in list:
+            setattr(q2, a, getattr(q, a))
+        q2 = cls.create(org=q.org, data_source=q.data_source,latest_query_data=q.latest_query_data,name=q.name,description=q.description,query=q.query,query_hash=q.query_hash,
+                   user_email=q.user_email,user=q.user)
+        print q.id
+        print q2.id
 
 
 
