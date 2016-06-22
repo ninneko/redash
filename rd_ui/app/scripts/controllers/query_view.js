@@ -138,12 +138,20 @@
         errorMessage: 'Query could not be saved'
       }, options);
 
-      return Query.save(data, function() {
+      return Query.save({id:$scope.query.id}, function() {
         growl.addSuccessMessage(options.successMessage);
       }, function(httpResponse) {
         growl.addErrorMessage(options.errorMessage);
       }).$promise;
-    }
+    };
+
+    $scope.forkQuery = function(options, data) {
+      return Query.fork({id:$scope.query.id}, function() {
+        growl.addSuccessMessage(options.successMessage);
+      }, function(httpResponse) {
+        growl.addErrorMessage(options.errorMessage);
+      }).$promise;
+    };
 
     $scope.saveDescription = function() {
       Events.record(currentUser, 'edit_description', 'query', $scope.query.id);
